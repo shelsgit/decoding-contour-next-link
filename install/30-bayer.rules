@@ -1,1 +1,0 @@
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="1a79", ATTRS{idProduct}=="6210", GROUP="bayerusb", MODE="0664"
