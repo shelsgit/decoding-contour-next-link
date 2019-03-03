@@ -25,11 +25,14 @@ Instructions to make a Display of current blood sugar level with a Low Alarm and
   * Open etcher and flash Raspian Lite onto your SD card (Note: this creates a small 'boot' drive and another drive - On windows i was required to format it so I created it only the default size (1.69GB/FAT)
 2. On your SD card - Edit the files below (refer to: https://learn.adafruit.com/raspberry-pi-zero-creation/text-file-editing)
   * Open file: config.txt (DONT USE NOTEPAD, Use Notepad++ or an app that won't mess up formatting):
-    - At bottom add:     
-    > # Enable UART
+    - At bottom add:	
+    ```
+	> # Enable UART
     > enable_uart=1
+	```
   * Create new file called: wpa_supplicant.conf
     - Open/edit it with your info/example below (left alligned):
+	```
     > ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
     > update_config=1
     > country=US
@@ -38,7 +41,8 @@ Instructions to make a Display of current blood sugar level with a Low Alarm and
     >     ssid="YOURSSID"
     >     psk="YOURPASSWORD"
     >     scan_ssid=1
-    > } 
+    > }
+	```
   * Create a new file called ssh (no .txt extention or any extension), and don't edit it/keep it as an empty file.
 3. Move the SD to the RPi0, and confirm it connects to your wireless network:
   * Eject your SD card and put it into your RPi0.  Use the 1st/TOPMOST USB PORT (if using a RPi0) and plug it into your computer - wait until green light stops blinking.
@@ -50,37 +54,54 @@ Instructions to make a Display of current blood sugar level with a Low Alarm and
   * Enter default RPi0 password: raspberry
 5. RPi0 Initial Setup (refer to: https://learn.adafruit.com/raspberry-pi-zero-creation/first-login)
   * Run system update:
+	```
     > sudo apt-get update
     > sudo apt-get upgrade
+	```
   * Run:
+  	```
     > sudo raspi-config
+	```
        - Select: Change user password and change from default (remember it/don't loose it!)
        - Select: 'Interfacing Options' and choose options to turn on SSH (although maybe not really needed being a boot file was made to set this on already)
        - Select: 'Advanced Options' - Choose A1-Expand Filesystem (so that all of you SD card is available)
        - Select: 'Update this Tool to the latest Version'
+
 6. Install additional required Rpi0 software:
-  * Confirm that you have Python 2.7 and PIP installed (Raspbian Stretch Lite comes w Python 2 and PIP for python2):  
+  * Confirm that you have Python 2.7 and PIP installed (Raspbian Stretch Lite comes w Python 2 and PIP for python2):
+  	 ```
     > python --version
     > pip --version
+	 ```
   * Install needed libraries:
+	 ```
     > sudo apt-get install libusb-1.0-0-dev
     > sudo apt-get install libudev-dev
     > sudo apt-get install python-lzo
     > sudo sudo apt-get install git-core
+	 ```
   * Install needed python packages:
+  	 ```
     > sudo -H pip2 install cython
     > sudo -H pip2 install hidapi
     > sudo -H pip2 install requests astm PyCrypto crc16 python-dateutil
     > sudo -H pip2 install RPi.GPIO (was actually already installed)
+	 ```
     - Note: If you get an error when trying any of the above installs, then read the error you get, to see which .h file or director was missing and search for a package which may include it with: apt-cache search FILENAME.  Then install it with: sudo apt-get install PACKAGENAME  
 7. Git - Clone and switch to branch:
   * Clone git project:
+  	 ```
     > git clone https://github.com/shelsgit/decoding-contour-next-link.git
+	 ```
   * Switch to Alarm Clock Branch:
+  	 ```
     > git checkout CNL-RPi0-AlarmClock
+	 ```
 8. Run the program (Make sure you did the git step above to make sure you're in the right branch!):
-> cd /home/pi/
-> sudo python2.7 -m decoding-contour-next-link.read_minimed_next24
+	 ```
+    > cd /home/pi/
+    > sudo python2.7 -m decoding-contour-next-link.read_minimed_next24
+	 ```
 (TO CHANGE THIS SO IT RUNs on startup)
 	
 ## Wiring
