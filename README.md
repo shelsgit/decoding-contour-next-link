@@ -1,11 +1,12 @@
 # ContourNextLink2.4/600PumpSeries - Display and Low Alarm
-Instructions to make a Display current blood sugar and Low blood sugar Alarm/Snooze (for Contour Next Link 2.4 and 600 series pump users)<br/>
-**Disclaimer And Warning<br/>**
-    All information, thought, and code described here is intended for informational and educational purposes only.<br/>
-	Make/use at your own risk, and do not use the information or code to make medical decisions.<br/>
-    Use of code from github.com is without warranty or formal support of any kind. Please review this repository’s LICENSE for details.<br/>
-    All product and company names, trademarks, servicemarks, registered trademarks, and registered servicemarks are the property of their respective holders. Their use is for information purposes and does not imply any affiliation with or endorsement by them.<br/>
-	This project has no association with and is not endorsed by Medtronic, or any other company.<br/>
+Instructions to make a Display current blood sugar and Low blood sugar Alarm/Snooze (for Contour Next Link 2.4 and 600 series pump users)<br/><br/>
+
+**Disclaimer And Warning**
+* All information, thought, and code described here is intended for informational and educational purposes only.<br/>
+* Make/use at your own risk, and do not use the information or code to make medical decisions.<br/>
+* Use of code from github.com is without warranty or formal support of any kind. Please review this repository’s LICENSE for details.<br/>
+* All product and company names, trademarks, servicemarks, registered trademarks, and registered servicemarks are the property of their respective holders. Their use is for information purposes and does not imply any affiliation with or endorsement by them.<br/>
+* This project has no association with and is not endorsed by Medtronic, or any other company.<br/>
 
 ## Components/Wiring/Requirements
 * Raspberry Pi Zero WF (RPi0)- for wifi and headless install/no miniHDMI converter needed (https://www.adafruit.com/product/3708) 
