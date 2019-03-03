@@ -1,7 +1,7 @@
 # ContourNextLink2.4/600PumpSeries - Display and Low Alarm
-Instructions to make a Display current blood sugar and Low blood sugar Alarm/Snooze (for Contour Next Link 2.4 and 600 series pump users)<br/><br/>
+Instructions to make a Display current blood sugar and Low blood sugar Alarm/Snooze (for Contour Next Link 2.4 and 600 series pump users)<br/>
 
-**Disclaimer And Warning**
+## Disclaimer And Warning**
 * All information, thought, and code described here is intended for informational and educational purposes only.<br/>
 * Make/use at your own risk, and do not use the information or code to make medical decisions.<br/>
 * Use of code from github.com is without warranty or formal support of any kind. Please review this repository’s LICENSE for details.<br/>
