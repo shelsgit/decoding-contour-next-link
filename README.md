@@ -25,24 +25,24 @@ Instructions to make a Display of current blood sugar level with a Low Alarm and
 	* Open etcher and flash Raspian Lite onto your SD card (Note: this creates a small 'boot' drive and another drive - On windows i was required to format it so I created it only the default size (1.69GB/FAT)
 2. On your SD card - Edit the files below (refer to: https://learn.adafruit.com/raspberry-pi-zero-creation/text-file-editing)
 	* Open file: config.txt (DONT USE NOTEPAD, Use Notepad++ or an app that won't mess up formatting):
-    - At bottom add:	
-    ```
-	# Enable UART
-    enable_uart=1
-	```
+		* At bottom add:	
+		```
+		# Enable UART
+		enable_uart=1
+		```
 	* Create new file called: wpa_supplicant.conf
-    - Open/edit it with your info/example below (left alligned):
-	```
-    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-    update_config=1
-    country=US
-     
-    network={
-         ssid="YOURSSID"
-         psk="YOURPASSWORD"
-         scan_ssid=1
-    }
-	```
+		* Open/edit it with your info/example below (left alligned):
+		```
+		ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+		update_config=1
+		country=US
+		 
+		network={
+			 ssid="YOURSSID"
+			 psk="YOURPASSWORD"
+			 scan_ssid=1
+		}
+		```
 	* Create a new file called ssh (no .txt extention or any extension), and don't edit it/keep it as an empty file.
 3. Move the SD to the RPi0, and confirm it connects to your wireless network:
 	* Eject your SD card and put it into your RPi0.  Use the 1st/TOPMOST USB PORT (if using a RPi0) and plug it into your computer - wait until green light stops blinking.
