@@ -1,60 +1,25 @@
-# decoding-contour-next-link
+# ContourNextLink2.4/600PumpSeries - Display and Low Alarm
+Instructions to make a Display current blood sugar and Low blood sugar Alarm/Snooze (for Contour Next Link 2.4 and 600 series pump users)
+Disclaimer And Warning
+    All information, thought, and code described here is intended for informational and educational purposes only.
+	Make/use at your own risk, and do not use the information or code to make medical decisions.
+    Use of code from github.com is without warranty or formal support of any kind. Please review this repository’s LICENSE for details.
+    All product and company names, trademarks, servicemarks, registered trademarks, and registered servicemarks are the property of their respective holders. Their use is for information purposes and does not imply any affiliation with or endorsement by them.
+	This project has no association with and is not endorsed by Medtronic, or any other company.
 
-[![Join the chat at https://gitter.im/pazaan/decoding-contour-next-link](https://badges.gitter.im/pazaan/decoding-contour-next-link.svg)](https://gitter.im/pazaan/decoding-contour-next-link?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+## Components/Wiring/Requirements
+* Raspberry Pi Zero WF (RPi0)- for wifi and headless install/no miniHDMI converter needed (https://www.adafruit.com/product/3708) 
+* TM 1637 Display (https://www.amazon.com/gp/product/B01DKISMXK/ref=ppx_yo_dt_b_asin_title_o07_s00?ie=UTF8&psc=1)
+* Pushbutton (https://www.amazon.com/gp/product/B01C8CS7EI/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1)
+* Carelink 2.4 (CNL) and 600 Series Pump
+* OTG cable - to connect CNL to RPi0
+* Wires to solder PB and Display to RPi0
 
-Space to collaborate on decoding Contour Next Link comms protocols, and the piggy-backed pump comms
+## Configure RPi0
+* TO FINISH
 
-## Getting Started
-* Make sure you have `python` and `pip` installed
-* Clone this project
-* If you're running macOS (El Capitan or later), you'll need to update `setuptools` like this first (due to [System Integrity Protection](https://support.apple.com/en-au/HT204899)):
-```
-$ sudo -H pip install --upgrade setuptools --user python
-```
-* Install the dependencies:  
-```
-$ sudo -H pip install cython
-$ sudo -H pip install hidapi
-$ sudo -H pip install requests astm PyCrypto crc16 python-dateutil
-$ sudo -H pip install python-lzo
-```
-* Plug in your Contour NextLink 2.4 USB stick
+## Wiring
+* TO FINISH
 
-Now you can try the script by calling the module from the parent directory
-```
-$ python -m decoding-contour-next-link.read_minimed_next24
-Active Insulin: 0.000U
-Sensor BGL: 0 mg/dL (0.0 mmol/L) at Thu Jan  1 01:00:00 1970
-BGL trend: 3 arrows down
-Current basal rate: 0.600U
-Temp basal rate: 0.000U
-Temp basal percentage: 0%
-Units remaining: 164.000U
-Battery remaining: 50%
-Getting Pump history info
- Pump Start: 2017-10-24 23:59:59.999972+02:00
- Pump End: 2017-10-26 22:13:21.999983+02:00
- Pump Size: 6144
-Getting Pump history
-# All Pump events:
-(' Pump: ', BolusWizardEstimateEvent 3d 2017-10-24 19:58:44.999969+02:00 BG Input:0, Carbs:3.0, Carb ratio: 0.5, Food est.:1.5, Correction est.:0.0, Wizard est.: 1.5, User modif.: False, Final est.: 1.5, )
-
-[...]
-
-# End Pump events
-Getting sensor history info
- Sensor Start: 2017-10-24 23:59:59.999975+02:00
- Sensor End: 2017-10-26 22:13:22.999987+02:00
- Sensor Size: 2048
-Getting Sensor history
-# All Sensor events:
-(' Sensor', NGPHistoryEvent 8 2008-12-31 23:00:10.999966+01:00)
-(' Sensor', NGPHistoryEvent 7 2017-08-03 17:19:22.999980+02:00)
-
-[...]
-
-# End Sensor events
-```
-
-## Known Issues
-* Assumed pump time was in UTC, but this doesn't ring true for non DST times (in Melbourne, anyway)
+## Notes
+* TO FINISH
