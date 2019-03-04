@@ -1,5 +1,5 @@
 # ContourNextLink2.4/600PumpSeries - Display and Low Alarm
-Instructions to make a Display of current blood sugar level with a Low Alarm and Snooze Button (for use with a Contour Next Link 2.4 and 600 series pump)<br/>
+Instructions to make a display of your current blood sugar level with a Low Alarm and Snooze Button (for use with a Contour Next Link 2.4 and 600 series pump)<br/>
 
 ## Disclaimer And Warning
 * All information, thought, and code described here is intended for informational and educational purposes only.<br/>
@@ -8,16 +8,17 @@ Instructions to make a Display of current blood sugar level with a Low Alarm and
 * All product and company names, trademarks, servicemarks, registered trademarks, and registered servicemarks are the property of their respective holders. Their use is for information purposes and does not imply any affiliation with or endorsement by them.<br/>
 * This project has no association with and is not endorsed by Medtronic, or any other company.<br/>
 
-## Components/Wiring/Requirements
+## Components/Requirements
 * Raspberry Pi Zero WF (RPi0)- for wifi and headless install/no miniHDMI converter needed (https://www.adafruit.com/product/3708) 
 * Micro SD Card
 * TM 1637 Display (https://www.amazon.com/gp/product/B01DKISMXK/ref=ppx_yo_dt_b_asin_title_o07_s00?ie=UTF8&psc=1)
 * Pushbutton (https://www.amazon.com/gp/product/B01C8CS7EI/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1)
+* Piezo Buzzer (https://www.adafruit.com/product/160?gclid=EAIaIQobChMIo-L8trDn4AIVyIWzCh3VjwtYEAQYASABEgKqyPD_BwE)
 * Contour Next Link 2.4 (CNL) and Medtronic 600 Series Pump
 * OTG cable - to connect CNL to RPi0
 * Wires to solder PB and Display to RPi0
 
-## Configure RPi0
+## Step1 - Configure RPi0
 1. Install Raspbian Lite onto your SD Card (you don't need to format or partition it prior/the install will do it):
 	* Download Raspian Lite: https://www.raspberrypi.org/downloads/raspbian/
     - Note: I used 2018-10-09-raspbian-stretch (I could not headlessly configure the wireless with the later version/ not sure why - 2018-11-13-raspbian-stretch-lite)
@@ -102,10 +103,29 @@ Instructions to make a Display of current blood sugar level with a Low Alarm and
     > cd /home/pi/
     > sudo python2.7 -m decoding-contour-next-link.read_minimed_next24
 	 ```
-(TO CHANGE THIS SO IT RUNs on startup)
+(TO CHANGE THIS to give steps to make it automatically run on startup)
+(TO ALSO ADD steps to MAKE PI readonly so it's ok to turn poweroff without properly shutting it down)
+(To Also 3d print a case, after add a picture of finished alarm)
 	
-## Wiring
-* TO FINISH
+## Step2 - Wiring
+* TM1637 Display -> RPi0(fyi, the GPIO pin layout for a RPi0 is the same as a RPi2 or RPi3 with 40pins):
+	* CLK -> GPIO23 (Pin 16, 8th pin down on right side)(top of RPi0 is up when GPIO pins are on the right)
+	* DiO -> GPIO24 (Pin 18, 9th pin down on right side)
+	* V -> Pi 5V Pin (Pin 2, Top pin on right side)(Could use 3V/Pin1(top,left) instead/less bright)
+	* Grnd -> Pi Grnd Pin (Pin 20, 10th down on right side)
+* Peizo Buzzer -> RPi0:
+	* + -> GPIO17 (Pin 11, 6th pin down on left side of RPi0)
+	* Grnd -> Pi Ground Pin (Pin 9, 5th down on right side)
+* Wiring Snooze Push Button -> RPi0:
+	* A(topleft of button) -> GPIO26 (left, 2nd from bottom pin)(grnd is bottom left pin)
+	* C(bottomleft of button) -> grnd (bottom left pin)
 
 ## Notes
-* TO FINISH
+* The display's 1st digit has a continual blinking underscore as a heartbeat to show that the program is running/hasn't crashed
+	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted
+	* If the blinking heartbeat stops for up to ~10s this is normal and indicates when the CNL is attempting to read from the pump
+* Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old. 
+* When the pump is calibrating or a calibration is required - the display will show 'CAL'
+* When the pump shows no signal - the display will show old then stale indication as described above
+* If the CNL if unplugged, and plugged back in, you will have to wait up to 15 sec for display to update
+* If the snooze is active and you unplug the CNL, it will buzz again when the snooze time is up until the next CNL check (when BG is not low or the data gets stale/display=8888)
