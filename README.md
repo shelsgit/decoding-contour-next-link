@@ -50,7 +50,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 	* Eject your SD card and put it into your RPi0.  Use the 1st/TOPMOST USB PORT (if using a RPi0) and plug it into your computer - wait until green light stops blinking.
 	* If you are using Windows, install Bonjour Print Services for Windows v2.0.2 - https://support.apple.com/kb/DL999?locale=en_US (I'm not sure if this is actually required but I did it)
 	* Open a command prompt and try to ping the RPi0 by hostname - With windows prompt: ping raspberrypi.local
-	* If you can't ping it, then you'll need to ping it by IP instead.  To figure out the RPi0's IP - I used: https://papertrailapp.com/ (IDed it's IP: saw 'raspberry' in a recent log with its IP)
+	* If you can't ping it, then you'll need to ping it by IP instead.  To figure out the RPi0's IP I have my home firewall send its event logging to: https://papertrailapp.com/.  You can setup the Rpi0 to do this as well for remote debugging, if you want.
 4. SSH to the RPi0 (use PuTTY/install if you don't have):
 	* Open Putty, and Enter hostname: pi@hostname(or IP) (all others default/SSH)
 	* Enter default RPi0 password: raspberry
@@ -64,10 +64,11 @@ Instructions to make a display of your current blood sugar level with a Low Alar
   	```
     > sudo raspi-config
 	```
-       - Select: Change user password and change from default (remember it/don't loose it!)
-       - Select: 'Interfacing Options' and choose options to turn on SSH (although maybe not really needed being a boot file was made to set this on already)
-       - Select: 'Advanced Options' - Choose A1-Expand Filesystem (so that all of you SD card is available)
-       - Select: 'Update this Tool to the latest Version'
+	* Select/do:
+		* 'Change user password'(or similar) - change your password from default (remember it/don't loose it!)
+		* 'Interfacing Options' and choose options to turn on SSH (although maybe not really needed being a boot file was made to set this on already)
+		* 'Advanced Options' - Choose A1-Expand Filesystem (so that all of you SD card is available)
+		* 'Update this Tool to the latest Version'
 
 6. Install additional required Rpi0 software:
 	* Confirm that you have Python 2.7 and PIP installed (Raspbian Stretch Lite comes w Python 2 and PIP for python2):
