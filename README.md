@@ -10,7 +10,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 
 ## Components/Requirements
 * Raspberry Pi Zero WF (RPi0)- for wifi and headless install/no miniHDMI converter needed (https://www.adafruit.com/product/3708) 
-* Micro SD Card
+* SD/MicroSD Card (https://www.adafruit.com/product/1294)
 * TM 1637 Display (https://www.amazon.com/gp/product/B01DKISMXK/ref=ppx_yo_dt_b_asin_title_o07_s00?ie=UTF8&psc=1)
 * Pushbutton (https://www.amazon.com/gp/product/B01C8CS7EI/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1)
 * Piezo Buzzer (https://www.adafruit.com/product/160?gclid=EAIaIQobChMIo-L8trDn4AIVyIWzCh3VjwtYEAQYASABEgKqyPD_BwE)
@@ -114,11 +114,11 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 	* V -> Pi 5V Pin (Pin 2, Top pin on right side)(Could use 3V/Pin1(top,left) instead/less bright)
 	* Grnd -> Pi Grnd Pin (Pin 20, 10th down on right side)
 * Peizo Buzzer -> RPi0:
-	* + -> GPIO17 (Pin 11, 6th pin down on left side of RPi0)
-	* Grnd -> Pi Ground Pin (Pin 9, 5th down on right side)
+	* '+'-> GPIO17 (Pin 11, 6th pin down on left side)
+	* Grnd -> Pi Ground Pin (Pin 9, 5th down on left side)
 * Wiring Snooze Push Button -> RPi0:
-	* A(topleft of button) -> GPIO26 (left, 2nd from bottom pin)(grnd is bottom left pin)
-	* C(bottomleft of button) -> grnd (bottom left pin)
+	* either pushbutton terminal -> GPIO26 (left, 2nd from bottom pin)(grnd is bottom left pin)
+	* other pushbutton terminal -> grnd (bottom left pin)
 
 ## Notes
 * The display's 1st digit has a continual blinking underscore as a heartbeat to show that the program is running/hasn't crashed

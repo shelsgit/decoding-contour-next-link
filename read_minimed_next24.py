@@ -36,7 +36,7 @@ import RPi.GPIO as IO #also imported in tm1637, maybe I can delete from there? (
 
 # Wiring: Buzzer -> Rpi3:
 # + -> GPIO17 (Pin 11, 6th pin down on left side of Rpi3)
-# Grnd -> Pi Ground Pin (Pin 9, 5th down on right side of Rpi3)
+# Grnd -> Pi Ground Pin (Pin 9, 5th down on left side of Rpi3)
 
 # Wiring Snooze Push Button -> Rpi3:
 # A(topleft of button) -> GPIO26 (left, 2nd from bottom pin)(grnd is bottom left pin)
