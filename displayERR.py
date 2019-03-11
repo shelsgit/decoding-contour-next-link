@@ -21,7 +21,7 @@ HexDigits = [0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d,
 ##     ---
 ##      D
 ##
-##  Err = 4, 17, 17
+##  Err = 36, 14, 27, 27
 
 ADDR_AUTO = 0x40
 ADDR_FIXED = 0x44
@@ -164,7 +164,7 @@ class TM1637:
             data = HexDigits[data] + pointData
         return data
 
-Display = tm1637.TM1637(CLK=23,DIO=24,brightness=1.0) #(0/off-1.0/full)
+Display = TM1637(CLK=23,DIO=24,brightness=1.0) #(0/off-1.0/full)
 Display.Clear()
-digits = [9,9,9,9]
+digits = [36, 14, 27, 27]
 Display.Show(digits)
