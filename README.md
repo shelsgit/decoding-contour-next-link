@@ -101,7 +101,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
     > git checkout CNL-RPi0-AlarmClock
 	 ```
 8. Create a service to run the python clock module, at bootup:<br/>
-* Make sure that by this step you've wired the Pushbutton and Display to the RPi0 (as in the 'Wiring' section below)  
+   ** Make sure that by this step you've wired the Pushbutton and Display to the RPi0 (as in the 'Wiring' section below)  
 	* Move the CNLdisplay.service file, as root to the system folder below, and then tell systemd to look for the new service:
   	 ```
     > cd /home/pi/decoding-contour-next-link/
