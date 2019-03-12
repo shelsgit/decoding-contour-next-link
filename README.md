@@ -16,8 +16,8 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 * Pushbutton (https://www.amazon.com/gp/product/B01C8CS7EI/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1)
 * Piezo Buzzer (https://www.adafruit.com/product/160?gclid=EAIaIQobChMIo-L8trDn4AIVyIWzCh3VjwtYEAQYASABEgKqyPD_BwE)
 * Contour Next Link 2.4 (CNL) and Medtronic 600 Series Pump
-* OTG cable - to connect CNL to RPi0
-* Wires to solder PB and Display to RPi0
+* OTG cable to connect CNL to RPi0(https://www.adafruit.com/product/1099)
+* Wires to connect PB and Display to RPi0 (https://www.adafruit.com/product/1950)
 
 ## RPi0 - Configure, Install Software, Start it on bootup as Service
 1. Install Raspbian Lite onto your SD Card (you don't need to format or partition it prior/the install will do it):
