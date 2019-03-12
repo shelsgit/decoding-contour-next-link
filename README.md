@@ -19,7 +19,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 * OTG cable - to connect CNL to RPi0
 * Wires to solder PB and Display to RPi0
 
-## Step1 - Configure RPi0
+## RPi0 - Configure, Install Software, Start it on bootup as Service
 1. Install Raspbian Lite onto your SD Card (you don't need to format or partition it prior/the install will do it):
 	* Download Raspian Lite: https://www.raspberrypi.org/downloads/raspbian/
     - Note: I used 2018-10-09-raspbian-stretch (I could not headlessly configure the wireless with the later version/ not sure why - 2018-11-13-raspbian-stretch-lite)
@@ -100,7 +100,8 @@ Instructions to make a display of your current blood sugar level with a Low Alar
   	 ```
     > git checkout CNL-RPi0-AlarmClock
 	 ```
-8. Create a service to run the python clock module, at bootup: 
+8. Create a service to run the python clock module, at bootup:<br/>
+* Make sure that by this step you've wired the Pushbutton and Display to the RPi0 (as in the 'Wiring' section below)  
 	* Move the CNLdisplay.service file, as root to the system folder below, and then tell systemd to look for the new service:
   	 ```
     > cd /home/pi/decoding-contour-next-link/
@@ -124,7 +125,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 	> sudo systemctl enable CNLdisplay.service
 	```
  
-## Step2 - Wiring
+## Wiring
 * TM1637 Display -> RPi0(fyi, the GPIO pin layout for a RPi0 is the same as a RPi2 or RPi3 with 40pins):
 	* CLK -> GPIO23 (Pin 16, 8th pin down on right side)(top of RPi0 is up when GPIO pins are on the right)
 	* DiO -> GPIO24 (Pin 18, 9th pin down on right side)
