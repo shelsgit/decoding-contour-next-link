@@ -148,4 +148,4 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 * If the CNL if unplugged, and plugged back in, you will have to wait up to 15 sec for display to update
 * If the snooze is active and you unplug the CNL, it will buzz again when the snooze time is up until the next CNL check (when BG is not low or the data gets stale/display=8888)
 * To do 1 - Make the PI readonly so it's ok to turn poweroff without properly shutting it down.  will need to turn off local logging - for now, will just use putty to restart or shutdown the pi when needed)
-* To do 2 - Make a 3d case)
+* To do 2 - Make a 3d case
