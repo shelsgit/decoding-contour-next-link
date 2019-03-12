@@ -126,8 +126,8 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 	```
  
 ## Wiring
-* TM1637 Display -> RPi0(fyi, the GPIO pin layout for a RPi0 is the same as a RPi2 or RPi3 with 40pins):
-	* CLK -> GPIO23 (Pin 16, 8th pin down on right side)(top of RPi0 is up when GPIO pins are on the right)
+* TM1637 Display -> RPi0 (fyi, the GPIO pin layout for a RPi0 is the same as a RPi2 or RPi3 with 40pins):
+	* CLK -> GPIO23 (Pin 16, 8th pin down on right side)(top of RPi0 is when the GPIO pins are on the right)
 	* DiO -> GPIO24 (Pin 18, 9th pin down on right side)
 	* V -> Pi 5V Pin (Pin 2, Top pin on right side)(Could use 3V/Pin1(top,left) instead/less bright)
 	* Grnd -> Pi Grnd Pin (Pin 20, 10th down on right side)
