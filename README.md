@@ -140,7 +140,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 
 ## Notes
 * The display's 1st digit has a continual blinking underscore as a heartbeat to show that the program is running/hasn't crashed
-	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted
+	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted<br/>
 	  UPDATE: if the program crashes, the display will now say 'err' instead of only having a missing heartbeat - I kept the heartbeat during normal operation for added confidence that it's really running/updating!
 	* If the blinking heartbeat stops for up to ~10s this is normal and indicates when the CNL is attempting to read from the pump
 * Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old. 
