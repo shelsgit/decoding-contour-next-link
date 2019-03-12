@@ -105,9 +105,37 @@ Instructions to make a display of your current blood sugar level with a Low Alar
     > cd /home/pi/
     > sudo python2.7 -m decoding-contour-next-link.read_minimed_next24
 	 ```
-(TO CHANGE THIS to give steps to make it automatically run on startup)
-(TO ALSO ADD steps to MAKE PI readonly so it's ok to turn poweroff without properly shutting it down)
-(To Also 3d print a case, after add a picture of finished alarm)
+(TO remove above step 8 and replace it with this/working steps to make it automatically run on startup):
+(for crontab to launch a shell script info, refer to: https://www.instructables.com/id/Raspberry-Pi-Launch-Python-script-on-startup/)
+(for additional systemd info, refer to: https://docs.fedoraproject.org/en-US/quick-docs/understanding-and-administering-systemd/index.html)
+
+Create a service to run the python clock module, at bootup: 
+	* Move the CNLdisplay.service file, as root to the system folder below, and then tell systemd to look for the new service:
+  	 ```
+    > cd /home/pi/decoding-contour-next-link/
+	> sudo cp CNLdisplay.service /etc/systemd/system/CNLdisplay.service
+	> sudo systemctl daemon-reload
+  	 ```
+	* Test it: try to start the service:
+  	 ```
+	> sudo systemctl start CNLdisplay.service
+  	 ```
+	* Check your service, to make sure its running OK:
+  	 ```	
+	> systemctl status CNLdisplay 
+  	 ```	
+	* Test it: Stop the service (and you should see 'err' on your display):
+  	 ```
+	> sudo systemctl stop CNLdisplay.service
+	```
+	* When you the service works, make it run automatically from boot up:
+	```
+	> sudo systemctl enable CNLdisplay.service
+	```
+	 ( You can also use the systemctl command to restart or disable the service, if ever wanted )
+ 
+(TO ALSO: ADD steps to MAKE PI readonly so it's ok to turn poweroff without properly shutting it down - turn off logging to local file - for, will just use putty to restart or shutdown the pi when needed)
+(TO ALSO: make a 3d case)
 	
 ## Step2 - Wiring
 * TM1637 Display -> RPi0(fyi, the GPIO pin layout for a RPi0 is the same as a RPi2 or RPi3 with 40pins):
@@ -125,6 +153,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 ## Notes
 * The display's 1st digit has a continual blinking underscore as a heartbeat to show that the program is running/hasn't crashed
 	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted
+	*    UPDATE: if the program crashes, it will now say 'err' instead of only having a missing heartbeat wiht stale data - i kept the heartbeat in also though for added confidence that it's really running/updating!
 	* If the blinking heartbeat stops for up to ~10s this is normal and indicates when the CNL is attempting to read from the pump
 * Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old. 
 * When the pump is calibrating or a calibration is required - the display will show 'CAL'
