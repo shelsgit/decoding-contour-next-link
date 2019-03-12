@@ -24,7 +24,7 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 	* Download Raspian Lite: https://www.raspberrypi.org/downloads/raspbian/
     - Note: I used 2018-10-09-raspbian-stretch (I could not headlessly configure the wireless with the later version/ not sure why - 2018-11-13-raspbian-stretch-lite)
 	* Get/install Etcher (to use to move/install Raspian onto the SD card): https://www.balena.io/etcher/
-	* Open etcher and flash Raspian Lite onto your SD card (Note: this creates a small 'boot' drive and another drive - On windows i was required to format it so I created it only the default size (1.69GB/FAT)
+	* Open etcher and flash Raspian Lite onto your SD card (Note: You don't need to format it beforehand - it will and will create a small 'boot' drive and another drive)
 2. On your SD card - Edit the files below (refer to: https://learn.adafruit.com/raspberry-pi-zero-creation/text-file-editing)
 	* Open file: config.txt (DONT USE NOTEPAD, Use Notepad++ or an app that won't mess up formatting):
 		* At bottom add:	
