@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
+import sys #only needed if using logging.basicConfig is going to stdout instead of to a file
 import logging
 # logging.basicConfig has to be before astm import, otherwise logs don't appear
 # Logging - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING shows warning + higher, .ERROR error+)
-logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
+# logging.disable(logging.CRITICAL) #Disables all levels of logging. Comment this line out to enable logging
+logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.ERROR) #Uncomment this and comment line below to write logs to file instead
+# logging.basicConfig(stream=sys.stdout,format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
+
 # a workaround on missing hidapi.dll on my windows (allows testing from saved files, but not download of pump)
 try:
     import hid # pip install hidapi - Platform independant
