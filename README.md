@@ -143,10 +143,9 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted<br/>
 	  UPDATE: if the program crashes, the display will now say 'err' instead of only having a missing heartbeat - I kept the heartbeat during normal operation for added confidence that it's really running/updating!
 	* If the blinking heartbeat stops for up to ~10s this is normal and indicates when the CNL is attempting to read from the pump
-* Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old. 
+* Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old.
+* The low BG setpoint = 68, and snooze time is 20min (you can change this by editing 'read_minimed_next24.py' setpoint variables near the top of the script )  
 * When the pump is calibrating or a calibration is required - the display will show 'CAL'
 * When the pump shows no signal - the display will show old then stale indication as described above
 * If the CNL if unplugged, and plugged back in, you will have to wait up to 15 sec for display to update
 * If the snooze is active and you unplug the CNL, it will buzz again when the snooze time is up until the next CNL check (when BG is not low or the data gets stale/display=8888)
-* To do 1 - Make the PI readonly so it's ok to turn poweroff without properly shutting it down.  will need to turn off local logging - for now, will just use putty to restart or shutdown the pi when needed)
-* To do 2 - Make a 3d case
