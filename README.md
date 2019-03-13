@@ -16,15 +16,15 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 * Pushbutton (https://www.amazon.com/gp/product/B01C8CS7EI/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1)
 * Piezo Buzzer (https://www.adafruit.com/product/160?gclid=EAIaIQobChMIo-L8trDn4AIVyIWzCh3VjwtYEAQYASABEgKqyPD_BwE)
 * Contour Next Link 2.4 (CNL) and Medtronic 600 Series Pump
-* OTG cable - to connect CNL to RPi0
-* Wires to solder PB and Display to RPi0
+* OTG cable to connect CNL to RPi0(https://www.adafruit.com/product/1099)
+* Wires to connect PB and Display to RPi0 (https://www.adafruit.com/product/1950)
 
-## Step1 - Configure RPi0
+## RPi0 - Configure, Install Software, Start it on bootup as Service
 1. Install Raspbian Lite onto your SD Card (you don't need to format or partition it prior/the install will do it):
 	* Download Raspian Lite: https://www.raspberrypi.org/downloads/raspbian/
     - Note: I used 2018-10-09-raspbian-stretch (I could not headlessly configure the wireless with the later version/ not sure why - 2018-11-13-raspbian-stretch-lite)
 	* Get/install Etcher (to use to move/install Raspian onto the SD card): https://www.balena.io/etcher/
-	* Open etcher and flash Raspian Lite onto your SD card (Note: this creates a small 'boot' drive and another drive - On windows i was required to format it so I created it only the default size (1.69GB/FAT)
+	* Open etcher and flash Raspian Lite onto your SD card (Note: You don't need to format it beforehand - it will and will create a small 'boot' drive and another drive)
 2. On your SD card - Edit the files below (refer to: https://learn.adafruit.com/raspberry-pi-zero-creation/text-file-editing)
 	* Open file: config.txt (DONT USE NOTEPAD, Use Notepad++ or an app that won't mess up formatting):
 		* At bottom add:	
@@ -100,18 +100,34 @@ Instructions to make a display of your current blood sugar level with a Low Alar
   	 ```
     > git checkout CNL-RPi0-AlarmClock
 	 ```
-8. Run the program (Make sure you did the git step above to make sure you're in the right branch!):
-	 ```
-    > cd /home/pi/
-    > sudo python2.7 -m decoding-contour-next-link.read_minimed_next24
-	 ```
-(TO CHANGE THIS to give steps to make it automatically run on startup)
-(TO ALSO ADD steps to MAKE PI readonly so it's ok to turn poweroff without properly shutting it down)
-(To Also 3d print a case, after add a picture of finished alarm)
-	
-## Step2 - Wiring
-* TM1637 Display -> RPi0(fyi, the GPIO pin layout for a RPi0 is the same as a RPi2 or RPi3 with 40pins):
-	* CLK -> GPIO23 (Pin 16, 8th pin down on right side)(top of RPi0 is up when GPIO pins are on the right)
+8. Create a service to run the python clock module, at bootup:<br/>
+   ** Make sure that by this step you've wired the Pushbutton and Display to the RPi0 (as in the 'Wiring' section below)  
+	* Move the CNLdisplay.service file, as root to the system folder below, and then tell systemd to look for the new service:
+  	 ```
+    > cd /home/pi/decoding-contour-next-link/
+	> sudo cp CNLdisplay.service /etc/systemd/system/CNLdisplay.service
+	> sudo systemctl daemon-reload
+  	 ```
+	* Test it: try to start the service:
+  	 ```
+	> sudo systemctl start CNLdisplay.service
+  	 ```
+	* Check your service, to make sure its running OK:
+  	 ```	
+	> systemctl status CNLdisplay 
+  	 ```	
+	* Test it: Stop the service (and you should see 'err' on your display):
+  	 ```
+	> sudo systemctl stop CNLdisplay.service
+	```
+	* When you the service works, make it run automatically from boot up:
+	```
+	> sudo systemctl enable CNLdisplay.service
+	```
+ 
+## Wiring
+* TM1637 Display -> RPi0 (fyi, the GPIO pin layout for a RPi0 is the same as a RPi2 or RPi3 with 40pins):
+	* CLK -> GPIO23 (Pin 16, 8th pin down on right side)(top of RPi0 is when the GPIO pins are on the right)
 	* DiO -> GPIO24 (Pin 18, 9th pin down on right side)
 	* V -> Pi 5V Pin (Pin 2, Top pin on right side)(Could use 3V/Pin1(top,left) instead/less bright)
 	* Grnd -> Pi Grnd Pin (Pin 20, 10th down on right side)
@@ -124,9 +140,11 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 
 ## Notes
 * The display's 1st digit has a continual blinking underscore as a heartbeat to show that the program is running/hasn't crashed
-	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted
+	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted<br/>
+	  UPDATE: if the program crashes, the display will now say 'err' instead of only having a missing heartbeat - I kept the heartbeat during normal operation for added confidence that it's really running/updating!
 	* If the blinking heartbeat stops for up to ~10s this is normal and indicates when the CNL is attempting to read from the pump
-* Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old. 
+* Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old.
+* The low BG setpoint = 68, and snooze time is 20min (you can change this by editing 'read_minimed_next24.py' setpoint variables near the top of the script )  
 * When the pump is calibrating or a calibration is required - the display will show 'CAL'
 * When the pump shows no signal - the display will show old then stale indication as described above
 * If the CNL if unplugged, and plugged back in, you will have to wait up to 15 sec for display to update
