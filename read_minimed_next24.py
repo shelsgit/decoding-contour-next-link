@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-# import sys #only needed if using logging.basicConfig is going to stdout instead of to a file
 import logging
 # logging.basicConfig has to be before astm import, otherwise logs don't appear
-# Logging info - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING shows warning + higher, .ERROR-DON NOT USE! causes CNL to crash on 2nd read - don't make sense but does!)
-logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG) #Uncomment this and comment line below to write logs to stdout instead
+# Logging info - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING or .ERROR shows that level or higher)
+logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.ERROR) #Uncomment this and comment line below to write logs to stdout instead
+# logging.disable(logging.CRITICAL) #Disables all levels of logging (CRITICAL down). Comment this line out to enable logging
+# import sys #only needed if using logging.basicConfig is going to stdout instead of to a file
 # logging.basicConfig(stream=sys.stdout,format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
-logging.disable(logging.CRITICAL) #Disables all levels of logging. Comment this line out to enable logging
 
 # a workaround on missing hidapi.dll on my windows (allows testing from saved files, but not download of pump)
 try:
