@@ -1339,7 +1339,7 @@ if __name__ == '__main__':
                     # Deactivate snooze and low alarm after 15 min of stale data
                     BGLLowBuzzerReq = 0 # deactivate 'CNL BGL low buzzer request'
                     SnoozeActive = 0 # Reset snooze status to inactive
-					print ("SNOOZE Deactivated (being CNL/pumpdata not readable/ data is stale (display=8888).")
+                    print ("SNOOZE Deactivated (being CNL/pumpdata not readable/ data is stale (display=8888).")
                 print ("Display Updated - data old - about: {0}s ({1}min)").format((noCNLcounter*28), ((noCNLcounter*28)/60))
                 logger.info("Display Updated - data old - display1stChar=circles or display=8888 if older")
             #end of program
