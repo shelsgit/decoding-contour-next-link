@@ -800,7 +800,7 @@ class Medtronic600SeriesDriver( object ):
         except:
             logger.info("OpenDevice-NotOpening - CNL not connected to USB Port")
             noCNL = 1 #CNL not connected (or reading correctly)
-			print("CNL not connected.  noCNL set to 1.")
+            print("CNL not connected.  noCNL set to 1.")
 
     def closeDevice( self ):
         logger.info("# Closing device")
@@ -1061,7 +1061,7 @@ def downloadPumpSession(downloadOperations):
                         except:
                             logger.warning("   EXCEPTION--mt.negotiateChannel()")  ## TESTING -- failed here, then goes where?
                             noCNL = 1
-							print("EXCEPTION--mt.negotiateChannel.  noCNL set to 1.")
+                            print("EXCEPTION--mt.negotiateChannel.  noCNL set to 1.")
                             return
                         mt.beginEHSM()
                         try:
@@ -1075,12 +1075,12 @@ def downloadPumpSession(downloadOperations):
                             except Exception:
                                 logger.warning("      EXCEPT--downloadOperations(mt)", exc_info = True)
                                 noCNL = 1
-								print("EXCEPTION--downloadOperations.  noCNL set to 1.")
+                                print("EXCEPTION--downloadOperations.  noCNL set to 1.")
                                 raise
                         except Exception:
                             logger.warning("   EXCEPT--downloadOperations(mt) -- CANT GET REALPUMPTIME", exc_info = True)
                             noCNL = 1
-							print("EXCEPTION--downloadOperations - Cant get realpumptime.  noCNL set to 1.")
+                            print("EXCEPTION--downloadOperations - Cant get realpumptime.  noCNL set to 1.")
                         finally:
                             logger.info("   FINALLY-after--mt.GetPumpTime()")
                             mt.finishEHSM()
