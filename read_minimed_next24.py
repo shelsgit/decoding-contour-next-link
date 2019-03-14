@@ -1222,10 +1222,10 @@ if __name__ == '__main__':
                 # Calculate when to do next BG check
                 try: #in case CNL read fails and realpumptime is still null
                     timediff = int((realpumptime - BGLtime).seconds)
-                    timetodelay = ((5.5*60) - timediff) #will do next BG check in 5.5min minus the time since the last BGreading
+                    timetodelay = ((5.25*60) - timediff) #will do next BG check in 5.25min minus the time since the last BGreading
                     print ("   TIMEDIFF between pumptime and BGLtime: {0:.1f}sec").format(timediff)
                     print ("   TIMEDIFF between pumptime and BGLtime: {0:.1f}min").format(timediff/60.00)
-                    print ("   Delay to next read: 5.5min-TIMEDIFF = {0:.1f}min ({1:.1f}s)...").format((timetodelay/60.00),timetodelay)
+                    print ("   Delay to next read: 5.25min-TIMEDIFF = {0:.1f}min ({1:.1f}s)...").format((timetodelay/60.00),timetodelay)
                 except Exception: #Shouldn't need this
                     logger.warning("Pumpdelay calc Exception - Setting next CNL delay to 180s")
                     print ("\n")
