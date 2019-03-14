@@ -800,6 +800,7 @@ class Medtronic600SeriesDriver( object ):
         except:
             logger.info("OpenDevice-NotOpening - CNL not connected to USB Port")
             noCNL = 1 #CNL not connected (or reading correctly)
+			print("CNL not connected.  noCNL set to 1.")
 
     def closeDevice( self ):
         logger.info("# Closing device")
@@ -1060,6 +1061,7 @@ def downloadPumpSession(downloadOperations):
                         except:
                             logger.warning("   EXCEPTION--mt.negotiateChannel()")  ## TESTING -- failed here, then goes where?
                             noCNL = 1
+							print("EXCEPTION--mt.negotiateChannel.  noCNL set to 1.")
                             return
                         mt.beginEHSM()
                         try:
@@ -1073,10 +1075,12 @@ def downloadPumpSession(downloadOperations):
                             except Exception:
                                 logger.warning("      EXCEPT--downloadOperations(mt)", exc_info = True)
                                 noCNL = 1
+								print("EXCEPTION--downloadOperations.  noCNL set to 1.")
                                 raise
                         except Exception:
                             logger.warning("   EXCEPT--downloadOperations(mt) -- CANT GET REALPUMPTIME", exc_info = True)
                             noCNL = 1
+							print("EXCEPTION--downloadOperations - Cant get realpumptime.  noCNL set to 1.")
                         finally:
                             logger.info("   FINALLY-after--mt.GetPumpTime()")
                             mt.finishEHSM()
@@ -1092,14 +1096,14 @@ def downloadPumpSession(downloadOperations):
         except Exception: #for failed mt.getDeviceInfo() - ie, when CNL is still starting up when CNL tries to read and fails read.
             logger.warning("EXCEPT--mt.getDeviceInfo().  Closing Device Next..")
             logger.warning("   (EXCEPTON from somewhere! Seeting noCNL=1")
-            print("EXCEPTION from somewhere!  Setting noCNL=1")
+            print("EXCEPTION--mt.getDeviceInfo. noCNL set to 1.")
             noCNL = 1
         finally:
             logger.info("FINALLY-after--mt.getDeviceInfo,mt.enterControlMode() - Running mt.closeDevice")
             mt.closeDevice()
     else:
-        logger.info("ELSE--No CNL connected to USB, returning to main")
-        print("No CNL connected to USB. Returning!")
+        logger.info("ELSE--No CNL connected to USB. noCNL set to 1") #noCNL was set to 1 in def/funct instead/prob should move here to be consistent
+        print("No CNL connected to USB. noCNL set to 1")
         return
 
 def pumpDownload(mt):
@@ -1255,7 +1259,7 @@ if __name__ == '__main__':
                         Display.Show1(1,8) #3rd display digit - show 8 to show that somethings messed up/CNL not attached
                         Display.Show1(0,8) #4th display digit - show 8 to show that somethings messed up/CNL not attached
                         display_char0lwr = 2
-                        noSigcounter = 20 #don't want it to contintually grow/get too big
+                        noSigcounter = 20 #don't want it to continually grow/get too big
                     print ("Display Updated - Pump has no sensor signal/redX - data old(display1stChar=circles) or stale(display=8888)")
                     logger.info("Display Updated - Pump has no sensor signal/redX - data olddisplay1stChar=circles) or stale(display=8888)")
                     BGLnoSig = 1 #so low alarm doesn't start buzzing
@@ -1315,7 +1319,7 @@ if __name__ == '__main__':
                 timetodelay = 15 # Delay time (sec) to next CNL check.  IF THIS IS CHANGED, also change when 8888 should be displayed below
                 startCNLcheck = 0 #resets needed to restart countdown to next CNL check
                 starttime = time.time() #reset Delay Counter to show that CNL just attempted read/getting starttime of new countdown to next read
-                print ("    So check for CNL connection will begin every 15 sec. And shut-off Buzzer, if active.")
+                print ("    So check for CNL connection will begin every 15 sec.")
 
                 # Update display, when data old or no CNL attached
                 if noCNLcounter == 1: #noCNLcounter=1 (often ~5.25min older than sensor time/1pump reading if an exception)
@@ -1335,6 +1339,7 @@ if __name__ == '__main__':
                     # Deactivate snooze and low alarm after 15 min of stale data
                     BGLLowBuzzerReq = 0 # deactivate 'CNL BGL low buzzer request'
                     SnoozeActive = 0 # Reset snooze status to inactive
+					print ("SNOOZE Deactivated (being CNL/pumpdata not readable/ data is stale (display=8888).")
                 print ("Display Updated - data old - about: {0}s ({1}min)").format((noCNLcounter*28), ((noCNLcounter*28)/60))
                 logger.info("Display Updated - data old - display1stChar=circles or display=8888 if older")
             #end of program
