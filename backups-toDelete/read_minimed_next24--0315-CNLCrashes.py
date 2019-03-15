@@ -2,8 +2,12 @@
 
 import logging
 # logging.basicConfig has to be before astm import, otherwise logs don't appear
-# Logging - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING shows warning + higher, .ERROR error+)
-logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
+# Logging info - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING or .ERROR shows that level or higher)
+logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.ERROR) #Uncomment this and comment line below to write logs to stdout instead
+# logging.disable(logging.CRITICAL) #Disables all levels of logging (CRITICAL down). Comment this line out to enable logging
+# import sys #only needed if using logging.basicConfig is going to stdout instead of to a file
+# logging.basicConfig(stream=sys.stdout,format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
+
 # a workaround on missing hidapi.dll on my windows (allows testing from saved files, but not download of pump)
 try:
     import hid # pip install hidapi - Platform independant
@@ -36,14 +40,14 @@ import RPi.GPIO as IO #also imported in tm1637, maybe I can delete from there? (
 
 # Wiring: Buzzer -> Rpi3:
 # + -> GPIO17 (Pin 11, 6th pin down on left side of Rpi3)
-# Grnd -> Pi Ground Pin (Pin 9, 5th down on right side of Rpi3)
+# Grnd -> Pi Ground Pin (Pin 9, 5th down on left side of Rpi3)
 
 # Wiring Snooze Push Button -> Rpi3:
 # A(topleft of button) -> GPIO26 (left, 2nd from bottom pin)(grnd is bottom left pin)
 # C(bottomleft of button) -> grnd (bottom left pin or Rpi3)
 ###############################################################
 
-#SETPOINTS 
+#SETPOINTS
 BGlowSP = 68 # low alarm/buzzer setpoint (mg/dL)
 SnoozeTimeSP = 20 # time to snooze after snooze PB pressed (minutes)
 
@@ -98,7 +102,7 @@ class COM_D_COMMAND:
     INITIATE_MULTIPACKET_TRANSFER = 0xFF00
     MULTIPACKET_SEGMENT_TRANSMISSION = 0xFF01
     MULTIPACKET_RESEND_PACKETS = 0xFF02
-    ACK_MULTIPACKET_COMMAND = 0x00FE # TODO ACK_COMMAND
+    ACK_MULTIPACKET_COMMAND = 0x00FE
     NAK_COMMAND = 0x00FF
     BOLUSES_REQUEST = 0x0114
     REMOTE_BOLUS_REQUEST = 0x0100
@@ -193,7 +197,7 @@ class MedtronicSession( object ):
 
     @property
     def HMAC( self ):
-        serial = bytearray( re.sub( r"\d+-", "", self.stickSerial ), 'ascii' ) 
+        serial = bytearray( re.sub( r"\d+-", "", self.stickSerial ), 'ascii' )
         paddingKey = b"A4BD6CED9A42602564F413123"
         digest = hashlib.sha256(serial + paddingKey).hexdigest()
         return "".join(reversed([digest[i:i+2] for i in range(0, len(digest), 2)]))
@@ -250,7 +254,7 @@ class MedtronicSession( object ):
     def IV( self ):
         tmp = bytearray()
         tmp.append(self.radioChannel)
-        tmp += self.KEY[1:]        
+        tmp += self.KEY[1:]
         return bytes(tmp)
 
 class MedtronicMessage( object ):
@@ -353,13 +357,12 @@ class MedtronicSendMessage( MedtronicMessage ):
         encryptedPayload += struct.pack( '>H', crc & 0xffff )
         # logger.debug("### PAYLOAD")
         # logger.debug(binascii.hexlify( encryptedPayload ))
-        
         mmPayload = struct.pack( '<QBBB',
             self.session.pumpMAC,
             self.session.minimedSequenceNumber,
             0x11, # Mode flags
             len( encryptedPayload )
-        )        
+        )
         mmPayload += self.encrypt( encryptedPayload )
 
         self.setPayload( mmPayload )
@@ -369,9 +372,8 @@ class MedtronicReceiveMessage( MedtronicMessage ):
     @classmethod
     def decode( cls, message, session ):
         response = MedtronicMessage.decode( message, session )
-       
-        # TODO - check validity of the envelope
-        response.responseEnvelope = response.payload[0:22] 
+        # check validity of the envelope
+        response.responseEnvelope = response.payload[0:22]
         decryptedResponsePayload = response.decrypt( bytes(response.payload[22:]) )
 
         response.responsePayload = decryptedResponsePayload[0:-2]
@@ -387,7 +389,6 @@ class MedtronicReceiveMessage( MedtronicMessage ):
                 raise ChecksumException( 'Expected to get {0}. Got {1}'.format( calcChecksum, checksum ) )
 
         response.__class__ = MedtronicReceiveMessage
-        
         if response.messageType == COM_D_COMMAND.TIME_RESPONSE:
             response.__class__ = PumpTimeResponseMessage
         elif response.messageType == COM_D_COMMAND.READ_HISTORY_INFO_RESPONSE:
@@ -400,7 +401,6 @@ class MedtronicReceiveMessage( MedtronicMessage ):
             response.__class__ = MultiPacketSegment
         elif response.messageType == COM_D_COMMAND.END_HISTORY_TRANSMISSION:
             response.__class__ = MultiPacketSegment
-        
         return response
 
     @property
@@ -437,7 +437,6 @@ class ReadLinkKeyResponseMessage( object ):
     def linkKey( self, serialNumber ):
         key = bytearray(b"")
         pos = ord_hack( serialNumber[-1:] ) & 7
-        
         for it in range(16):
             if ( ord_hack( self.packedLinkKey[pos + 1] ) & 1) == 1:
                 key.append(~ord_hack( self.packedLinkKey[pos] ) & 0xff)
@@ -456,7 +455,7 @@ class PumpTimeResponseMessage( MedtronicReceiveMessage ):
     def decode( cls, message, session ):
         response = MedtronicReceiveMessage.decode( message, session )
         if response.messageType != COM_D_COMMAND.TIME_RESPONSE:
-            logger.warning("UnexpectedMessageException.") 
+            logger.warning("UnexpectedMessageException.")
             UnexpectedMessageException( "Expected to get a Time Response message '{0}'. Got {1}.".format( COM_D_COMMAND.TIME_RESPONSE, response.messageType ) )
 
         # Since we only add behaviour, we can cast this class to ourselves
@@ -499,14 +498,14 @@ class PumpHistoryInfoResponseMessage( MedtronicReceiveMessage ):
     @property
     def historySize( self ):
         return struct.unpack( '>I', self.responsePayload[4:8] )[0]
-    
+
     @property
     def encodedDatetimeStart( self ):
         return struct.unpack( '>Q', self.responsePayload[8:16] )[0]
 
     @property
     def encodedDatetimeEnd( self ):
-        return struct.unpack( '>Q', self.responsePayload[16:24] )[0]    
+        return struct.unpack( '>Q', self.responsePayload[16:24] )[0]
 
     @property
     def datetimeStart( self ):
@@ -529,7 +528,7 @@ class MultiPacketSegment( MedtronicReceiveMessage ):
     @property
     def packetNumber( self ):
         return struct.unpack( '>H', self.responsePayload[3:5] )[0]
-    
+
     @property
     def payload( self ):
         return self.responsePayload[5:]
@@ -558,7 +557,7 @@ class PumpStatusResponseMessage( MedtronicReceiveMessage ):
     def decode( cls, message, session ):
         response = MedtronicReceiveMessage.decode( message, session )
         if response.messageType != COM_D_COMMAND.READ_PUMP_STATUS_RESPONSE:
-            logger.info("UnexpectedMessageException3.") 
+            logger.info("UnexpectedMessageException3.")
             raise UnexpectedMessageException( "Expected to get a Status Response message '{0}'. Got {1}.".format( COM_D_COMMAND.READ_PUMP_STATUS_RESPONSE, response.messageType ) )
 
         # Since we only add behaviour, we can cast this class to ourselves
@@ -670,11 +669,11 @@ class PumpHistoryRequestMessage( MedtronicSendMessage ):
 class AckMultipacketRequestMessage( MedtronicSendMessage ):
     SEGMENT_COMMAND__INITIATE_TRANSFER = COM_D_COMMAND.INITIATE_MULTIPACKET_TRANSFER
     SEGMENT_COMMAND__SEND_NEXT_SEGMENT = COM_D_COMMAND.MULTIPACKET_SEGMENT_TRANSMISSION
-    
+
     def __init__( self, session, segmentCommand ):
         payload = struct.pack( '>H', segmentCommand )
         MedtronicSendMessage.__init__( self, COM_D_COMMAND.ACK_MULTIPACKET_COMMAND, session, payload )
-    
+
 class BasicNgpParametersRequestMessage( MedtronicSendMessage ):
     def __init__( self, session ):
         MedtronicSendMessage.__init__( self, COM_D_COMMAND.NGP_PARAMETER_REQUEST, session )
@@ -685,7 +684,7 @@ class DeviceCharacteristicsRequestMessage( MedtronicSendMessage ):
 
 class SuspendResumeRequestMessage( MedtronicSendMessage ):
     def __init__( self, session ):
-        # TODO: Bug? Shall the payload be passed to the message, or not needed?
+        # Bug? Shall the payload be passed to the message, or not needed?
         payload = struct.pack( '>B', 0x01 )
         MedtronicSendMessage.__init__( self, COM_D_COMMAND.SUSPEND_RESUME_REQUEST, session )
 
@@ -721,7 +720,7 @@ class BayerBinaryMessage( object ):
         self.session = session
         if messageType and self.session:
             self.envelope = struct.pack( '<BB6s10sBI5sI', 0x51, 3, b'000000', b'\x00' * 10,
-                messageType, self.session.bayerSequenceNumber, b'\x00' * 5, 
+                messageType, self.session.bayerSequenceNumber, b'\x00' * 5,
                 len( self.payload ) if self.payload else 0 )
             self.envelope += struct.pack( 'B', self.makeMessageCrc() )
 
@@ -748,21 +747,20 @@ class BayerBinaryMessage( object ):
     def decode( cls, message ):
         response = cls()
         response.envelope = message[0:33]
-        response.payload = message[33:] 
+        response.payload = message[33:]
 
         checksum = message[32]
         calcChecksum = response.makeMessageCrc()
         if( checksum != calcChecksum ):
             logger.error('ChecksumException: Expected to get {0}. Got {1}'.format( calcChecksum, checksum ))
             raise ChecksumException( 'Expected to get {0}. Got {1}'.format( calcChecksum, checksum ) )
-
         return response
-    
+
     @property
     def linkDeviceOperation( self ):
         return ord_hack(self.envelope[18])
 
-    # HACK: This is just a debug try, session param shall not be there    
+    # HACK: This is just a debug try, session param shall not be there
     def checkLinkDeviceOperation( self, expectedValue, session = None ):
         if self.linkDeviceOperation != expectedValue:
             logger.debug("### checkLinkDeviceOperation BayerBinaryMessage.envelope: {0}".format(binascii.hexlify(self.envelope)))
@@ -802,6 +800,7 @@ class Medtronic600SeriesDriver( object ):
         except:
             logger.info("OpenDevice-NotOpening - CNL not connected to USB Port")
             noCNL = 1 #CNL not connected (or reading correctly)
+            print("CNL not connected.  noCNL set to 1.")
 
     def closeDevice( self ):
         logger.info("# Closing device")
@@ -980,7 +979,6 @@ class Medtronic600SeriesDriver( object ):
         logger.info("# Finish Extended High Speed Mode Session")
         try:
             mtMessage = FinishEHSMMessage( self.session )
-    
             bayerMessage = BayerBinaryMessage( 0x12, self.session, mtMessage.encode() )
             self.sendMessage( bayerMessage.encode() )
             try:
@@ -1037,20 +1035,20 @@ class Medtronic600SeriesDriver( object ):
 # Deleted unused defs for History, unneeded for display/alarm
 
 def downloadPumpSession(downloadOperations):
-    global realpumptime 
+    global realpumptime
     global noCNL
     mt = Medtronic600SeriesDriver()
     mt.openDevice()
     if noCNL == 0: #mt.openDevice in line above makes noCNL=1 now if it finds no CNL attached)
-        try: 
+        try:
             logger.info("TRY--mt.getDeviceInfo,mt.enterControlMode()")
             mt.getDeviceInfo() #when cnl starting up after plugged into usb, this is where program does runtime failure and then does belowmost 'finally' before exiting
             logger.info("Device serial: {0}".format(mt.deviceSerial))
             mt.enterControlMode()
-            try: 
+            try:
                 logger.info("TRY--enterPassthroughMode()")
                 mt.enterPassthroughMode()
-                try: 
+                try:
                     logger.info("TRY--mt.openConnection()")
                     mt.openConnection()
                     try:
@@ -1063,46 +1061,49 @@ def downloadPumpSession(downloadOperations):
                         except:
                             logger.warning("   EXCEPTION--mt.negotiateChannel()")  ## TESTING -- failed here, then goes where?
                             noCNL = 1
+                            print("EXCEPTION--mt.negotiateChannel.  noCNL set to 1.")
                             return
                         mt.beginEHSM()
-                        try:  
+                        try:
                             logger.info("   TRY--mt.GetPumpTime()")
                             # We need to read always the pump time to store the offset for later messeging
                             realpumptime = mt.getPumpTime()
-                            print('\n' + 'Pumptime: {0}').format(realpumptime) 
+                            print('\n' + 'Pumptime: {0}').format(realpumptime)
                             try:
-                                logger.info("      TRY--downloadOperations(mt)") 
+                                logger.info("      TRY--downloadOperations(mt)")
                                 downloadOperations(mt)
                             except Exception:
                                 logger.warning("      EXCEPT--downloadOperations(mt)", exc_info = True)
-                                noCNL = 1 
+                                noCNL = 1
+                                print("EXCEPTION--downloadOperations.  noCNL set to 1.")
                                 raise
-                        except Exception: 
+                        except Exception:
                             logger.warning("   EXCEPT--downloadOperations(mt) -- CANT GET REALPUMPTIME", exc_info = True)
                             noCNL = 1
+                            print("EXCEPTION--downloadOperations - Cant get realpumptime.  noCNL set to 1.")
                         finally:
                             logger.info("   FINALLY-after--mt.GetPumpTime()")
                             mt.finishEHSM()
                     finally:
-                        logger.info("FINALLY-after--mt.readInfo,LinkKey,beginEHSM().  Running mt.closeConnection") 
+                        logger.info("FINALLY-after--mt.readInfo,LinkKey,beginEHSM().  Running mt.closeConnection")
                         mt.closeConnection()
-                finally: 
+                finally:
                     logger.info("FINALLY-after--mt.openConnection().  Running mt.exitPassthroughMode")
                     mt.exitPassthroughMode()
             finally:
                 logger.info("FINALLY-after--enterPassthroughMode().  Running mt.exitControlMode")
                 mt.exitControlMode()
-        except Exception: #for failed mt.getDeviceInfo() - ie, when CNL is still starting up when CNL tries to read and fails read.  
+        except Exception: #for failed mt.getDeviceInfo() - ie, when CNL is still starting up when CNL tries to read and fails read.
             logger.warning("EXCEPT--mt.getDeviceInfo().  Closing Device Next..")
             logger.warning("   (EXCEPTON from somewhere! Seeting noCNL=1")
-            print("EXCEPTION from somewhere!  Setting noCNL=1")
-            noCNL = 1                      
+            print("EXCEPTION--mt.getDeviceInfo. noCNL set to 1.")
+            noCNL = 1
         finally:
             logger.info("FINALLY-after--mt.getDeviceInfo,mt.enterControlMode() - Running mt.closeDevice")
             mt.closeDevice()
     else:
-        logger.info("ELSE--No CNL connected to USB, returning to main")
-        print("No CNL connected to USB. Returning!")
+        logger.info("ELSE--No CNL connected to USB. noCNL set to 1") #noCNL was set to 1 in def/funct instead/prob should move here to be consistent
+        print("No CNL connected to USB. noCNL set to 1")
         return
 
 def pumpDownload(mt):
@@ -1123,11 +1124,10 @@ def pumpDownload(mt):
 
     BGLtime = status.sensorBGLTimestamp
     BGL = status.sensorBGL
-    logger.info("     BGLtime: {0}".format( BGLtime )) 
-    logger.info("End of pump download") 
+    logger.info("     BGLtime: {0}".format( BGLtime ))
+    logger.info("End of pump download")
 
-if __name__ == '__main__': 
-    
+if __name__ == '__main__':
     IO.setwarnings(False)  #Comment this line out to see GPIO warnings
     IO.setmode(IO.BCM)
     Display = tm1637.TM1637(CLK=23,DIO=24,brightness=1.0) #Configure Display wiring and brightness(0/off-1.0/full brightness)
@@ -1139,7 +1139,7 @@ if __name__ == '__main__':
     noSigcounter = 0
     SnoozeActive = 0
     SnoozePBcheckON = 0
-    display_char0lwr = 0 #display current status: 0 = blank, 1 = upper circle, 2 = 8,  
+    display_char0lwr = 0 #display current status: 0 = blank, 1 = upper circle, 2 = 8,
     BGLnoSig = 0 # to update display correctly when pump shows no Signal
     timetodelay = 0 #Start with no time delay for 1st CNL read
     BGLLowBuzzerReq = 0 #Start with buzzer off
@@ -1198,7 +1198,7 @@ if __name__ == '__main__':
         elif display_char0lwr == 1: # currently: upper circle
             displayHB = 42   # heartbeat: upper circle + underscore
             displayNoHB = 41
-        elif display_char0lwr == 2: # currently: 8 
+        elif display_char0lwr == 2: # currently: 8
             displayHB = 43   # heartbeat: 8 + + NOunderscore
             displayNoHB = 8
 
@@ -1213,10 +1213,9 @@ if __name__ == '__main__':
             time.sleep(0.5)
         if display_char0lwr == 1:
             Display.Show1(0,displayHB) #displayHB
-            
-        #CNL - connection attempt/download info from pump
+	#CNL - connection attempt/download info from pump
         if ((noCNL == 0) and (startCNLcheck == 1)): #First time running or CNL is confirmed attached, and delay done/ready for next CNLcheck
-            print('CNLCheck Starting (noCNL==0, starCBLcheck==1)...  ')              
+            print('CNLCheck Starting (noCNL==0, starCBLcheck==1)...  ')
             downloadPumpSession(pumpDownload)  #Connects (will set noCNL=1 if CNL not attached), Reads/decodes CNL data, Closes, Prints CNL data
 
             print('CNLCheck Done.  noCNL = {0}.  (0 means CNL attached or BGL updated.  1 means not attached or BGL not updated)').format(noCNL)
@@ -1228,9 +1227,9 @@ if __name__ == '__main__':
                 try: #in case CNL read fails and realpumptime is still null
                     timediff = int((realpumptime - BGLtime).seconds)
                     timetodelay = ((5.25*60) - timediff) #will do next BG check in 5.25min minus the time since the last BGreading
-                    print ("   TIMEDIFF between pumptime and BGLtime: {0:.1f}sec").format(timediff) 
-                    print ("   TIMEDIFF between pumptime and BGLtime: {0:.1f}min").format(timediff/60.00) 
-                    print ("   Delay to next read: 5.25min-TIMEDIFF = {0:.1f}min ({1:.1f}s)...").format((timetodelay/60.00),timetodelay) 
+                    print ("   TIMEDIFF between pumptime and BGLtime: {0:.1f}sec").format(timediff)
+                    print ("   TIMEDIFF between pumptime and BGLtime: {0:.1f}min").format(timediff/60.00)
+                    print ("   Delay to next read: 5.25min-TIMEDIFF = {0:.1f}min ({1:.1f}s)...").format((timetodelay/60.00),timetodelay)
                 except Exception: #Shouldn't need this
                     logger.warning("Pumpdelay calc Exception - Setting next CNL delay to 180s")
                     print ("\n")
@@ -1260,14 +1259,14 @@ if __name__ == '__main__':
                         Display.Show1(1,8) #3rd display digit - show 8 to show that somethings messed up/CNL not attached
                         Display.Show1(0,8) #4th display digit - show 8 to show that somethings messed up/CNL not attached
                         display_char0lwr = 2
-                        noSigcounter = 20 #don't want it to contintually grow/get too big
+                        noSigcounter = 20 #don't want it to continually grow/get too big
                     print ("Display Updated - Pump has no sensor signal/redX - data old(display1stChar=circles) or stale(display=8888)")
                     logger.info("Display Updated - Pump has no sensor signal/redX - data olddisplay1stChar=circles) or stale(display=8888)")
                     BGLnoSig = 1 #so low alarm doesn't start buzzing
                 elif BGL == 770: #CNL reads BGL OK, but BGL=770 (this means sensor is or needs calibrating)
                     noSigcounter = 0
                     BGLnoSig = 0 #reset
-                    display_char0lwr = 0 
+                    display_char0lwr = 0
                     Display.Show1(1,12) #2nd display digit - show C
                     Display.Show1(2,10) #3rd display digit - show A
                     Display.Show1(3,21) #3rd display digit - show L
@@ -1288,7 +1287,6 @@ if __name__ == '__main__':
                             Display.Show1(1, digits[1]) #2nd display digit(position1), display value of digits[1], if not 0
                     print ("Display Updated with new BGL")
                     logger.info("Display Updated with new BGL")
-                    
                 # Set request to Activate or Deactivate Alarm/Buzzer (if BGL low or not)
                 if (BGL < BGlowSP) and (BGLnoSig == 0):
                     BGLLowBuzzerReq = 1
@@ -1312,16 +1310,16 @@ if __name__ == '__main__':
                 # Reset being data updated from CNL
                 noCNLcounter = 0 #reset
 
-            else: #noCNL = 1 (no CNL is attached, or noCNL was set to 1 because of an exception/did NOT read data for any reason) 
+            else: #noCNL = 1 (no CNL is attached, or noCNL was set to 1 because of an exception/did NOT read data for any reason)
                 print ("\n"+"CNL not attached or Exceptions occurred -- Could not read CNL/Pumpdata"+"\n")
                 logger.info("CNL not attached or Exceptions occurred -- Could not read CNL/Pumpdata")
 
                 noCNLcounter = noCNLcounter + 1
                 noCNL = 0 #resets CNL to 1 so it can continue to do CNL (connection) check while CNL not plugged in (to see if it's since been plugged in.  if not plugged in will reset there back to 1)
-                timetodelay = 15 # Delay time (sec) to next CNL check.  IF THIS IS CHANGED, also change when 8888 should be displayed below 
+                timetodelay = 15 # Delay time (sec) to next CNL check.  IF THIS IS CHANGED, also change when 8888 should be displayed below
                 startCNLcheck = 0 #resets needed to restart countdown to next CNL check
                 starttime = time.time() #reset Delay Counter to show that CNL just attempted read/getting starttime of new countdown to next read
-                print ("    So check for CNL connection will begin every 15 sec. And shut-off Buzzer, if active.")
+                print ("    So check for CNL connection will begin every 15 sec.")
 
                 # Update display, when data old or no CNL attached
                 if noCNLcounter == 1: #noCNLcounter=1 (often ~5.25min older than sensor time/1pump reading if an exception)
@@ -1338,9 +1336,10 @@ if __name__ == '__main__':
                     Display.Show1(0,8) #4th display digit - show 8 to show that something is messed up/CNL not attached
                     display_char0lwr = 2
                     noCNLcounter = 20 #don't want it to continually grow/get too big
-                    # Deactivate snooze and low alarm after 15 min of stale data 
+                    # Deactivate snooze and low alarm after 15 min of stale data
                     BGLLowBuzzerReq = 0 # deactivate 'CNL BGL low buzzer request'
                     SnoozeActive = 0 # Reset snooze status to inactive
+                    print ("SNOOZE Deactivated (being CNL/pumpdata not readable/ data is stale (display=8888).")
                 print ("Display Updated - data old - about: {0}s ({1}min)").format((noCNLcounter*28), ((noCNLcounter*28)/60))
                 logger.info("Display Updated - data old - display1stChar=circles or display=8888 if older")
             #end of program
