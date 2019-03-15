@@ -1340,7 +1340,7 @@ if __name__ == '__main__':
                     # Deactivate snooze and low alarm after 15 min of stale data 
                     BGLLowBuzzerReq = 0 # deactivate 'CNL BGL low buzzer request'
                     SnoozeActive = 0 # Reset snooze status to inactive
-					print ("Snooze Deactivated")
+                    print ("Snooze Deactivated")
                 print ("Display Updated - After no CNL read")
                 logger.info("Display Updated - data old - display1stChar=circles or display=8888 if older")
             #end of program
