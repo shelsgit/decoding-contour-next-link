@@ -3,7 +3,7 @@
 import logging
 # logging.basicConfig has to be before astm import, otherwise logs don't appear
 # Logging - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING shows warning + higher, .ERROR error+)
-logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.CRITICAL)
+logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
 # a workaround on missing hidapi.dll on my windows (allows testing from saved files, but not download of pump)
 try:
     import hid # pip install hidapi - Platform independant
@@ -1093,22 +1093,23 @@ def downloadPumpSession(downloadOperations):
                 logger.info("FINALLY-after--enterPassthroughMode().  Running mt.exitControlMode")
                 mt.exitControlMode()
         except Exception: #for failed mt.getDeviceInfo() - ie, when CNL is still starting up when CNL tries to read and fails read.  
-            logger.warning("   (EXCEPTON! Set noCNL=1")
-            print("\nEXCEPTION!  Set noCNL=1\n")
+            logger.warning("EXCEPT--mt.getDeviceInfo().  Closing Device Next..")
+            logger.warning("   (EXCEPTON from somewhere! Seeting noCNL=1")
+            print("EXCEPTION from somewhere!  Setting noCNL=1")
             noCNL = 1                      
         finally:
             logger.info("FINALLY-after--mt.getDeviceInfo,mt.enterControlMode() - Running mt.closeDevice")
             mt.closeDevice()
     else:
         logger.info("ELSE--No CNL connected to USB, returning to main")
-        print("\nNo CNL connected to USB. Set noCNL=1\n")
+        print("No CNL connected to USB. Returning!")
         return
 
 def pumpDownload(mt):
     global BGLtime
     global BGL
     status = mt.getPumpStatus()
-    print ("\nMY PUMP INFO - ")
+    print ("MY PUMP INFO - ")
     print ("Active Insulin: {0:.3f}U".format( status.activeInsulin ))
     print ("Sensor BGL: {0} mg/dL ({1:.1f} mmol/L) at {2}".format( status.sensorBGL,
              status.sensorBGL / 18.016,
@@ -1118,7 +1119,7 @@ def pumpDownload(mt):
     print ("Temp basal rate: {0:.3f}U".format( status.tempBasalRate ))
     print ("Temp basal percentage: {0}%".format( status.tempBasalPercentage ))
     print ("Units remaining: {0:.3f}U".format( status.insulinUnitsRemaining ))
-    print ("Battery remaining: {0}%\n".format( status.batteryLevelPercentage ))
+    print ("Battery remaining: {0}%".format( status.batteryLevelPercentage ))
 
     BGLtime = status.sensorBGLTimestamp
     BGL = status.sensorBGL
@@ -1126,7 +1127,6 @@ def pumpDownload(mt):
     logger.info("End of pump download") 
 
 if __name__ == '__main__': 
-    
     IO.setwarnings(False)  #Comment this line out to see GPIO warnings
     IO.setmode(IO.BCM)
     Display = tm1637.TM1637(CLK=23,DIO=24,brightness=1.0) #Configure Display wiring and brightness(0/off-1.0/full brightness)
@@ -1134,21 +1134,19 @@ if __name__ == '__main__':
     IO.setup(17,IO.OUT) #Configure Buzzer wiring
 
     Display.Clear()
+    sleep(15)
     noCNLcounter = 0
     noSigcounter = 0
     SnoozeActive = 0
     SnoozePBcheckON = 0
-    display_char0lwr = 0 #display current status: 0 = blank, 1 = upper circle, 2 = 8,  
+    display_char0lwr = 0 #display current status: 0 = blank, 1 = upper circle, 2 = 8
     BGLnoSig = 0 # to update display correctly when pump shows no Signal
     timetodelay = 0 #Start with no time delay for 1st CNL read
     BGLLowBuzzerReq = 0 #Start with buzzer off
     starttime = time.time() #time CNL was last updated (or time it was turned on if CNL not read yet)
     startCNLcheck = 1 #1 means CNL delay done, ready to do next (or initial) CNL check
-    ### whilecounter_CNLcheck = 0 #Use this to delay CNL time check to do only every so many loops
 
     while True:
-        ###        whilecounter_CNLcheck = whilecounter_CNLcheck + 1
-        ###        if whilecounter_CNLcheck < 30
         # See if delay to next CNL check is done/ready to check CNL again
         print("Next CNLcheck check when: {:.1f} >= {:.1f}").format((time.time() - starttime), timetodelay)
         if ((time.time() - starttime) >= timetodelay):
@@ -1197,7 +1195,7 @@ if __name__ == '__main__':
         elif display_char0lwr == 1: # currently: upper circle
             displayHB = 42   # heartbeat: upper circle + underscore
             displayNoHB = 41
-        elif display_char0lwr == 2: # currently: 8 
+        elif display_char0lwr == 2: # currently: 8
             displayHB = 43   # heartbeat: 8 + + NOunderscore
             displayNoHB = 8
 
@@ -1245,21 +1243,21 @@ if __name__ == '__main__':
                 noSigcounter = noSigcounter + 1
                 #CNL reads BGL OK, but BGL=0 (this means no signal/red X on pump)
                 if BGL < 1:
-                    if (noSigcounter == 1 and noCNLcounter == 0): #noSigcounter=1 (each noSigcounter is about 5.25min older than sensor time) AND not already old data
+                    if (noSigcounter == 1 and noCNLcounter == 0): #noSigcounter=1 (about 5.25min older than sensor time) AND not already old data
                         Display.Show1(0,41) #display topcircle in 1st char (= 41)
                         display_char0lwr = 1
                     elif (noSigcounter == 3): #(about 11min than sensor time) AND not already old data
                         Display.Show1(0, 8) #Display: 1st digit
                         display_char0lwr = 2 #set to show that bottom underscore char of leftmost char (char0) is on
                     # Display 8888 (when CNL reads no signal for ~17min)
-                    elif noSigcounter == 5: #data stale or CNL detached for 17min
+                    elif noSigcounter >= 5: #data stale or CNL detached for 17min
                         Display.Clear()
                         Display.Show1(3,8) #1st display digit - show 8 to show that somethings messed up/CNL not attached
                         Display.Show1(2,8) #2nd display digit - show 8 to show that somethings messed up/CNL not attached
                         Display.Show1(1,8) #3rd display digit - show 8 to show that somethings messed up/CNL not attached
                         Display.Show1(0,8) #4th display digit - show 8 to show that somethings messed up/CNL not attached
                         display_char0lwr = 2
-                        noSigcounter = 99 #only need to do this elif once
+                        noSigcounter = 20 #don't want it to contintually grow/get too big
                     print ("Display Updated - Pump has no sensor signal/redX - data old(display1stChar=circles) or stale(display=8888)")
                     logger.info("Display Updated - Pump has no sensor signal/redX - data olddisplay1stChar=circles) or stale(display=8888)")
                     BGLnoSig = 1 #so low alarm doesn't start buzzing
@@ -1330,18 +1328,17 @@ if __name__ == '__main__':
                     Display.Show1(0, 8) #Display: 8 in 1st digit
                     display_char0lwr = 2
                 # Display 8888
-                elif noCNLcounter == 32: #another 5min later data stale or CNL detached for ~15.25min
+                elif noCNLcounter >= 32: #another 5min later data stale or CNL detached for ~15.25min
                     Display.Show1(3,8) #1st display digit - show 8 to show that something is messed up/CNL not attached
                     Display.Show1(2,8) #2nd display digit - show 8 to show that something is messed up/CNL not attached
                     Display.Show1(1,8) #3rd display digit - show 8 to show that something is messed up/CNL not attached
                     Display.Show1(0,8) #4th display digit - show 8 to show that something is messed up/CNL not attached
                     display_char0lwr = 2
-                    noCNLcounter = 33 #only need to do this elif once
+                    noCNLcounter = 20 #don't want it to continually grow/get too big
                     # Deactivate snooze and low alarm after 15 min of stale data 
                     BGLLowBuzzerReq = 0 # deactivate 'CNL BGL low buzzer request'
                     SnoozeActive = 0 # Reset snooze status to inactive
-                    print ("Snooze Deactivated")
-                print ("Display Updated - After no CNL read")
+                print ("Display Updated - data old - about: {0}s ({1}min)").format((noCNLcounter*28), ((noCNLcounter*28)/60))
                 logger.info("Display Updated - data old - display1stChar=circles or display=8888 if older")
             #end of program
         #end of program
