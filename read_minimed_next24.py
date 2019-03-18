@@ -3,7 +3,7 @@
 import logging
 # logging.basicConfig has to be before astm import, otherwise logs don't appear
 # Logging - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING shows warning + higher, .ERROR error+)
-logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.ERROR)
+logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
 # a workaround on missing hidapi.dll on my windows (allows testing from saved files, but not download of pump)
 try:
     import hid # pip install hidapi - Platform independant
@@ -44,7 +44,7 @@ import RPi.GPIO as IO #also imported in tm1637, maybe I can delete from there? (
 ###############################################################
 
 #SETPOINTS 
-BGlowSP = 70 # low alarm/buzzer setpoint (mg/dL)
+BGlowSP = 68 # low alarm/buzzer setpoint (mg/dL)
 SnoozeTimeSP = 20 # time to snooze after snooze PB pressed (minutes)
 
 #Define globals
@@ -1239,7 +1239,7 @@ if __name__ == '__main__':
                     print ("timetodelay : {0}").format(timetodelay)
                     print ("Pumpdelay calc Exception.  Setting CNL update delay set to 180s"+"\n")
                     timetodelay = 180
-                if (timetodelay < 0):  #when timediff is greater than negative, ie when xmitter had no signal and now back in range
+                if (timetodelay < 0):  #if timedelay messed up and negative, ie when xmitter had no signal and now back in range
                     timetodelay = 180
 
                 # Update display
