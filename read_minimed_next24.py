@@ -3,7 +3,7 @@
 import logging
 # logging.basicConfig has to be before astm import, otherwise logs don't appear
 # Logging - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING shows warning + higher, .ERROR error+)
-logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
+logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.ERROR)
 # a workaround on missing hidapi.dll on my windows (allows testing from saved files, but not download of pump)
 try:
     import hid # pip install hidapi - Platform independant
@@ -44,7 +44,7 @@ import RPi.GPIO as IO #also imported in tm1637, maybe I can delete from there? (
 ###############################################################
 
 #SETPOINTS 
-BGlowSP = 68 # low alarm/buzzer setpoint (mg/dL)
+BGlowSP = 70 # low alarm/buzzer setpoint (mg/dL)
 SnoozeTimeSP = 20 # time to snooze after snooze PB pressed (minutes)
 
 #Define globals
@@ -1132,9 +1132,12 @@ if __name__ == '__main__':
     Display = tm1637.TM1637(CLK=23,DIO=24,brightness=1.0) #Configure Display wiring and brightness(0/off-1.0/full brightness)
     IO.setup(26, IO.IN, pull_up_down=IO.PUD_UP) #Configure pushbutton wiring and resistors
     IO.setup(17,IO.OUT) #Configure Buzzer wiring
-
     Display.Clear()
-    sleep(15)
+    for i in range(1,20): #blink the Heartbeat, depending on current value
+        Display.Show1(0,39) #display 1st char_HB
+        time.sleep(0.5)
+        Display.Show1(0,36) #hide 1st char_HB
+        time.sleep(0.5)
     noCNLcounter = 0
     noSigcounter = 0
     SnoozeActive = 0
@@ -1236,7 +1239,7 @@ if __name__ == '__main__':
                     print ("timetodelay : {0}").format(timetodelay)
                     print ("Pumpdelay calc Exception.  Setting CNL update delay set to 180s"+"\n")
                     timetodelay = 180
-                if (timetodelay < 0):  #if timedelay messed up and negative, ie when xmitter had no signal and now back in range
+                if (timetodelay < 0):  #when timediff is greater than negative, ie when xmitter had no signal and now back in range
                     timetodelay = 180
 
                 # Update display
