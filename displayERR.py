@@ -170,10 +170,10 @@ class TM1637:
 
 Display = TM1637(CLK=23,DIO=24,brightness=1.0) #(0/off-1.0/full)
 Display.Clear()
-for i in range(1, 20): #20sec blink off, then shutdown pi
-    Display.Show(36, 0, 15, 15) #OFF
+for i in range(1,5): #5sec blink 'OFF' before shutting of the RPi
+    Display.Show([36,0,15,15]) #OFF
     sleep(.5)
-    Display.Show(36, 36, 36, 36) #blank
+    Display.Show([36,36,36,36]) #blank
     sleep(.5)
 Display.Clear()
-call("sudo shutdown -h now", shell=True)
+call("sudo shutdown -h now", shell=True) #shutoff the RPi

@@ -7,6 +7,9 @@ Type=simple
 User=root
 WorkingDirectory=/home/pi/
 ExecStart=/usr/bin/python2.7 -m decoding-contour-next-link.read_minimed_next24
+# Below will make service stop in 10hrs (testing 7 min below that)
+# RuntimeMaxSec=36000
+RuntimeMaxSec=420
 ExecStopPost=/home/pi/decoding-contour-next-link/displayERR.py
 
 [Install]

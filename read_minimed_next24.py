@@ -44,7 +44,7 @@ import RPi.GPIO as IO #also imported in tm1637, maybe I can delete from there? (
 ###############################################################
 
 #SETPOINTS 
-BGlowSP = 68 # low alarm/buzzer setpoint (mg/dL)
+BGlowSP = 70 # low alarm/buzzer setpoint (mg/dL)
 SnoozeTimeSP = 20 # time to snooze after snooze PB pressed (minutes)
 
 #Define globals
@@ -1267,12 +1267,30 @@ if __name__ == '__main__':
                 elif BGL == 770: #CNL reads BGL OK, but BGL=770 (this means sensor is or needs calibrating)
                     noSigcounter = 0
                     BGLnoSig = 0 #reset
-                    display_char0lwr = 0 
+                    display_char0lwr = 0
                     Display.Show1(1,12) #2nd display digit - show C
                     Display.Show1(2,10) #3rd display digit - show A
                     Display.Show1(3,21) #3rd display digit - show L
                     print ("Display Updated with CAL/Calibration required.")
                     logger.info("Display Updated with CAL/Calibration required")
+                elif BGL == 777: #CNL reads BGL OK, but BGL=777 (this means your BGL is LOW/below 40)
+                    noSigcounter = 0
+                    BGLnoSig = 0 #reset
+                    display_char0lwr = 0 
+                    Display.Show1(1,36) #2nd display digit - show blank
+                    Display.Show1(2,21) #3rd display digit - show L
+                    Display.Show1(3,0) #3rd display digit - show 0
+                    print ("Display Updated with LO.")
+                    logger.info("Display Updated with LO")
+                elif BGL == 776: #CNL reads BGL OK, but BGL=776 (this means your BGL is LOW/below 40)
+                    noSigcounter = 0
+                    BGLnoSig = 0 #reset
+                    display_char0lwr = 0
+                    Display.Show1(1,36) #2nd display digit - show blank
+                    Display.Show1(2,17) #3rd display digit - show H
+                    Display.Show1(3,18) #3rd display digit - show I
+                    print ("Display Updated with HI")
+                    logger.info("Display Updated with HI")
                 else: #CNL reads normal BGL (# not 0/no signal or 770/calibrating)
                     Display.Clear()
                     display_char0lwr = 0
