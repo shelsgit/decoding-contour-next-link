@@ -2,6 +2,8 @@
 
 import math
 import RPi.GPIO as IO
+from time import sleep
+from subprocess import call
 
 IO.setwarnings(False) #Comment this out to see warnings
 IO.setmode(IO.BCM)
@@ -168,5 +170,10 @@ class TM1637:
 
 Display = TM1637(CLK=23,DIO=24,brightness=1.0) #(0/off-1.0/full)
 Display.Clear()
-digits = [36, 14, 27, 27]
-Display.Show(digits)
+for i in range(1, 20): #20sec blink off, then shutdown pi
+    Display.Show(36, 0, 15, 15) #OFF
+    sleep(.5)
+    Display.Show(36, 36, 36, 36) #blank
+    sleep(.5)
+Display.Clear()
+call("sudo shutdown -h now", shell=True)
