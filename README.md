@@ -157,6 +157,6 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 * When you turn the RPi0 on, it will take ~30sec to get your first reading (in order to give the RPi0 and meter time to startup).
 * When you turn the RPi0 on, the script will run as a service, AND IT WILL STOP AND POWEROFF THE RPi0 AFTER 9 hours (this is because I want it to shutdown properly rather than pulling the power each morning, and don't want to have to SSH in each day to properly shut it down)(If you want it powered on longer or always instead, edit (then reload) your /etc/systemd/system/CNLdisplay.service)
 * When the pump is calibrating or a calibration is required - the display will show 'CAL'
-* The display will show 'LO' and 'HI' when the pump does.  If your display shows a value such as 776, this means something such as sensor updating, for example.  Not all of these are programmed which is why you may be a display of 700+ in these cases
+* The display will show 'LO' and 'HI' when the pump does.  If your display shows a value such as 776, this means something such as 'sensor updating', for example (refer to your pump, as the display will just show the big number).
 * When the pump shows no signal - the display will show old then stale indication as described above (so that you can still see your previous BG and see that it is getting old and eventually stale)
 * If the snooze is active and you unplug the CNL, it will buzz again when the snooze time is up until the next CNL check (when BG is not low or the data gets stale/display=8888)
