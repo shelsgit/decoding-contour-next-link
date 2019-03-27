@@ -139,15 +139,24 @@ Instructions to make a display of your current blood sugar level with a Low Alar
 * Wiring Snooze Push Button -> RPi0:
 	* either pushbutton terminal -> GPIO26 (left, 2nd from bottom pin)(grnd is bottom left pin)
 	* other pushbutton terminal -> grnd (bottom left pin)
+* Power(microUSB cable) -> RPi0:
+	* microUSB -> TOP RPi0 microUSB port
+* OTG cable -> RPi0:
+	* OTG Cable -> 2nd (not TOP) RPi0 microUSB port
 
 ## Notes
-* The display's 1st digit has a continual blinking underscore as a heartbeat to show that the program is running/hasn't crashed
-	* IF THIS BLINKING heartbeat STOPS (for more than ~10s) this means the program crashed and data is STALE and it must be restarted<br/>
-	  UPDATE: If the program crashes, the display will now say 'err' instead of only having a missing heartbeat - I kept the heartbeat during normal operation for added confidence that it's really running/updating!
-	* If the blinking heartbeat stops for up to ~10s this is normal and indicates when the CNL is attempting to read from the pump (and CNL will blink yellow)
-* Old/Stale Data Indication:  The display's 1st digit will show a 0 if the RPi0 missed a reading from the CNL, and an 8 if it misses another.  The display will show 8888 when it is considered 'stale', which is ~ >17min old.
-* The low BG setpoint = 68, and snooze time is 20min (you can change this by editing 'read_minimed_next24.py' setpoint variables near the top of the script )  
+* The Display's 1st(leftmost) digit is to display status:
+	* There is a continual blinking underscore, as a heartbeat, to show that the program is running/hasn't crashed
+		* The program has been very reliable for me, but if the program does crash, the display will now show 'OFF' for 20sec, then go blank, and the Rpi will be powered off.
+		* If the blinking heartbeat stops for ~10s this is normal and indicates when the CNL is attempting to read from the pump (and CNL will blink yellow)
+	* The 1st digit will also indicate any Recently missed, or Stale Data:
+		* 0 -  the RPi0 missed one reading from the CNL (this will happen occasionally)
+		* 8 - the RPi0 missed more than one reading
+		* 8888 - the display data should be considered 'stale', it is ~>17min old
+* The low BG setpoint = <70, and snooze time is 20min (you can change this by editing 'read_minimed_next24.py' setpoint variables near the top of the script)  
+* When you turn the RPi0 on, it will take ~30sec to get your first reading (in order to give the RPi0 and meter time to startup).
+* When you turn the RPi0 on, the script will run as a service, AND IT WILL STOP AND POWEROFF THE RPi0 AFTER 9 hours (this is because I want it to shutdown properly rather than pulling the power each morning, and don't want to have to SSH in each day to properly shut it down)(If you want it powered on longer or always instead, edit (then reload) your /etc/systemd/system/CNLdisplay.service)
 * When the pump is calibrating or a calibration is required - the display will show 'CAL'
-* When the pump shows no signal - the display will show old then stale indication as described above
-* If the CNL is unplugged, and plugged back in, you will have to wait up to 15 sec for display to update
+* The display will show 'LO' and 'HI' when the pump does.  If your display shows a value such as 776, this means something such as sensor updating, for example.  Not all of these are programmed which is why you may be a display of 700+ in these cases
+* When the pump shows no signal - the display will show old then stale indication as described above (so that you can still see your previous BG and see that it is getting old and eventually stale)
 * If the snooze is active and you unplug the CNL, it will buzz again when the snooze time is up until the next CNL check (when BG is not low or the data gets stale/display=8888)
