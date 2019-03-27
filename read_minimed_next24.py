@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import logging
+from logging.handlers import RotatingFileHandler # Added to limit log file size
 # logging.basicConfig has to be before astm import, otherwise logs don't appear
 # Logging - filemode=w overrights logfile each time script is ran, .DEBUG, shows all info,warning and debug logs, .WARNING shows warning + higher, .ERROR error+)
-logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.DEBUG)
+logging.basicConfig(filename='read_mini.log',filemode='w',format='%(asctime)s %(levelname)s [%(name)s] %(message)s',level=logging.WARNING)
 # a workaround on missing hidapi.dll on my windows (allows testing from saved files, but not download of pump)
 try:
     import hid # pip install hidapi - Platform independant
@@ -55,6 +56,8 @@ noCNL = 0
 BGL = 777
 
 logger = logging.getLogger(__name__)
+handler = RotatingFileHandler("read_mini.log", maxBytes=25000, backupCount=1) # Added to limit log file size
+logger.addHandler(handler) # Added to limit log file size
 
 ascii= {
     'ACK' : 0x06,
